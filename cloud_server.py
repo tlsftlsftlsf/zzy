@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-云服务器同步API服务
-适用于积分系统的云端数据同步
+云服务器同步API服务 + 静态文件服务
+适用于积分系统的云端数据同步和前端页面服务
 
 部署说明：
 1. pip install flask flask-cors
 2. python cloud_server.py
 3. 服务将运行在 http://localhost:5000
+4. 访问 http://localhost:5000 查看积分系统前端
 """
 
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 import json
 import os
@@ -22,23 +23,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
-
-# 配置CORS允许跨域访问
-from flask_cors import cross_origin
-CORS(app, 
-     origins=["http://localhost:8000", "http://localhost:3000", "http://127.0.0.1:8000", "*"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
-
-# 为每个路由添加CORS支持
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
-    return response
-
-app.after_request(add_cors_headers)
+app = Flask(__name__, static_folder='static', static_url_path='')
+CORS(app)  # 允许跨域访问
 
 # 数据文件路径
 DATA_FILE = '/tmp/points-data.json'
@@ -193,14 +179,20 @@ def health_check():
         'version': '1.0.0'
     })
 
+@app.route('/')
+def index():
+    """积分系统前端页面"""
+    return send_from_directory('.', 'index.html')
+
 @app.route('/api/info', methods=['GET'])
 def server_info():
     """服务器信息"""
     return jsonify({
         'name': '积分系统云同步服务',
         'version': '1.0.0',
-        'description': '为积分系统提供云端数据同步服务',
+        'description': '为积分系统提供云端数据同步服务和前端页面',
         'endpoints': {
+            'index': '/',
             'upload': '/api/upload',
             'download': '/api/download', 
             'backup': '/api/backup',

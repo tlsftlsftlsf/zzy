@@ -48,6 +48,7 @@ sudo chmod -R 755 /var/www/points-sync
 # 复制应用文件
 echo "📄 部署应用文件..."
 cp cloud_server.py /var/www/points-sync/
+cp index.html /var/www/points-sync/
 chmod +x /var/www/points-sync/cloud_server.py
 
 # 创建虚拟环境
@@ -134,7 +135,8 @@ echo "=============================================="
 echo ""
 echo "📋 部署信息:"
 echo "   应用目录: /var/www/points-sync"
-echo "   配置文件: /var/www/points-sync/cloud_server.py"
+echo "   前端页面: /var/www/points-sync/index.html"
+echo "   API服务: /var/www/points-sync/cloud_server.py"
 echo "   日志目录: /var/log/points-sync"
 echo "   系统服务: points-sync"
 echo ""
@@ -150,8 +152,10 @@ echo "   状态: points-sync status"
 echo "   日志: points-sync logs"
 echo ""
 echo "🌐 访问地址:"
-echo "   本地: http://localhost:5000"
-echo "   局域网: http://$(hostname -I | awk '{print $1}'):5000"
+echo "   积分系统前端: http://localhost:5000"
+echo "   局域网访问: http://$(hostname -I | awk '{print $1}'):5000"
+echo "   API文档: http://localhost:5000/api/info"
+echo "   健康检查: http://localhost:5000/api/health"
 echo ""
 echo "📋 API端点:"
 echo "   服务信息: GET /api/info"

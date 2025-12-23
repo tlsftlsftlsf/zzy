@@ -3829,6 +3829,63 @@
             }
         };
         
+        // 带重试的云同步函数
+        async function uploadToCloudWithRetry(retryCount = 3, delay = 1000) {
+            for (let attempt = 1; attempt <= retryCount; attempt++) {
+                try {
+                    cloudSyncLog.addLog(`尝试第${attempt}次上传数据到云端`, 'info');
+                    
+                    const response = await fetch(`${cloudConfig.serverUrl}/api/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...(cloudConfig.apiKey && { 'Authorization': `Bearer ${cloudConfig.apiKey}` })
+                        },
+                        body: JSON.stringify(pointsData)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        cloudSyncLog.addLog(`数据上传成功 (第${attempt}次尝试)`, 'success');
+                        return result;
+                    } else {
+                        throw new Error(result.message || '上传失败');
+                    }
+                } catch (error) {
+                    cloudSyncLog.addLog(`第${attempt}次上传失败: ${error.message}`, 'error');
+                    
+                    if (attempt === retryCount) {
+                        throw error;
+                    }
+                    
+                    // 等待后重试
+                    await new Promise(resolve => setTimeout(resolve, delay * attempt));
+                }
+            }
+        }
+        
+        // 上传数据到云服务器
+        async function uploadToCloud() {
+            if (!cloudConfig.serverUrl) {
+                showToast('请先配置云服务器地址', 'error');
+                return;
+            }
+            
+            try {
+                const result = await uploadToCloudWithRetry();
+                showToast('✅ 数据上传成功！云端已保存您的积分数据');
+                return result;
+            } catch (error) {
+                console.error('云端上传失败:', error);
+                cloudSyncLog.addLog(`上传失败: ${error.message}`, 'error');
+                showToast('❌ 上传失败: ' + error.message, 'error');
+                throw error;
+            }
+        }
+        
+        // 云同步相关功能
+        
         // 打开云同步面板
         function openCloudSyncPanel() {
             console.log('打开云同步面板');
