@@ -2331,6 +2331,7 @@
                             <!-- 学习类 -->
                             <optgroup label="📚 学习成长">
                                 <option value="完成作业">完成作业</option>
+                                <option value="__CUSTOM_INPUT__">📝 自定义输入...</option>
                                 <option value="按时完成作业">按时完成作业</option>
                                 <option value="主动学习">主动学习</option>
                                 <option value="考试优秀">考试优秀</option>
@@ -2459,7 +2460,14 @@
                             </optgroup>
                             
                             <option value="其他">其他</option>
+                            <option value="__CUSTOM_INPUT__">📝 自定义输入...</option>
                         </select>
+                    </div>
+                    <!-- 自定义获得原因输入框 -->
+                    <div class="input-group" id="customAddReasonGroup" style="display: none;">
+                        <label for="customAddReason">请输入自定义获得原因</label>
+                        <input type="text" id="customAddReason" placeholder="例如：帮妈妈做了一件特别的事" maxlength="50">
+                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">字数限制：50字以内</div>
                     </div>
                     <button class="btn btn-add" onclick="addPoints()">🚀 获得积分</button>
                 </div>
@@ -2477,6 +2485,7 @@
                             <!-- 奖励兑换类 -->
                             <optgroup label="🎁 奖励兑换">
                                 <option value="买玩具">买玩具</option>
+                                <option value="__CUSTOM_INPUT__">📝 自定义输入...</option>
                                 <option value="买零食">买零食</option>
                                 <option value="买文具">买文具</option>
                                 <option value="买书本">买书本</option>
@@ -2564,7 +2573,14 @@
                             </optgroup>
                             
                             <option value="其他">其他</option>
+                            <option value="__CUSTOM_INPUT__">📝 自定义输入...</option>
                         </select>
+                    </div>
+                    <!-- 自定义消费原因输入框 -->
+                    <div class="input-group" id="customSubtractReasonGroup" style="display: none;">
+                        <label for="customSubtractReason">请输入自定义消费/惩罚原因</label>
+                        <input type="text" id="customSubtractReason" placeholder="例如：买了一个心仪的玩具" maxlength="50">
+                        <div style="font-size: 0.85em; color: #6c757d; margin-top: 5px;">字数限制：50字以内</div>
                     </div>
                     <button class="btn btn-subtract" onclick="subtractPoints()">💸 消费积分</button>
                 </div>
@@ -3333,7 +3349,9 @@
                 // 新增的筛选器和统计相关元素
                 'dateFilter', 'typeFilter', 'reasonFilter', 'filterStatus',
                 'filteredTotalCount', 'filteredEarnedTotal', 'filteredSpentTotal', 'filteredNetGain',
-                'earnedCategoryChart', 'spentCategoryChart', 'trendChart', 'monthlyChart'
+                'earnedCategoryChart', 'spentCategoryChart', 'trendChart', 'monthlyChart',
+                // 新增的自定义输入元素
+                'customAddReasonGroup', 'customAddReason', 'customSubtractReasonGroup', 'customSubtractReason'
             ];
             
             elementIds.forEach(id => {
@@ -4560,15 +4578,15 @@
         async function addPoints() {
             console.log('=== 添加积分功能调用 ===');
             const amount = parseInt(elements.addAmount.value);
-            const reason = elements.addReason.value;
+            const reason = getActualReason(elements.addReason, elements.customAddReasonGroup, 'earn');
 
             if (!amount || amount <= 0) {
                 showToast('请输入有效的积分数量', 'error');
                 return;
             }
 
-            if (!reason.trim()) {
-                showToast('请选择获得原因', 'error');
+            if (!reason) {
+                showToast('请选择或输入获得原因', 'error');
                 return;
             }
 
@@ -4614,15 +4632,15 @@
         async function subtractPoints() {
             console.log('=== 减少积分功能调用 ===');
             const amount = parseInt(elements.subtractAmount.value);
-            const reason = elements.subtractReason.value;
+            const reason = getActualReason(elements.subtractReason, elements.customSubtractReasonGroup, 'spend');
 
             if (!amount || amount <= 0) {
                 showToast('请输入有效的积分数量', 'error');
                 return;
             }
 
-            if (!reason.trim()) {
-                showToast('请选择消费原因', 'error');
+            if (!reason) {
+                showToast('请选择或输入消费原因', 'error');
                 return;
             }
 
@@ -6060,6 +6078,56 @@
             }
         }
         
+        // 显示/隐藏自定义输入框
+        function toggleCustomInput(reasonSelect, customInputGroup, type) {
+            const selectedValue = reasonSelect.value;
+            
+            if (selectedValue === '__CUSTOM_INPUT__') {
+                // 显示自定义输入框
+                customInputGroup.style.display = 'block';
+                // 聚焦到输入框
+                setTimeout(() => {
+                    const input = customInputGroup.querySelector('input');
+                    if (input) input.focus();
+                }, 100);
+                
+                // 为自定义输入设置默认积分数量
+                if (type === 'earn') {
+                    elements.addAmount.value = 10;
+                    showPointsSuggestion('addAmount', 10, '获得');
+                } else if (type === 'spend') {
+                    elements.subtractAmount.value = 5;
+                    showPointsSuggestion('subtractAmount', 5, '消费');
+                }
+            } else {
+                // 隐藏自定义输入框
+                customInputGroup.style.display = 'none';
+                
+                // 如果不是自定义输入，恢复自动设置积分数量
+                if (selectedValue && selectedValue !== '其他') {
+                    autoSetPointsAmount(selectedValue, type);
+                }
+            }
+        }
+        
+        // 获取实际的原因文本（处理自定义输入）
+        function getActualReason(reasonSelect, customInputGroup, type) {
+            const selectedValue = reasonSelect.value;
+            
+            if (selectedValue === '__CUSTOM_INPUT__') {
+                const customInput = customInputGroup.querySelector('input');
+                const customReason = customInput.value.trim();
+                
+                if (!customReason) {
+                    return null; // 返回null表示需要验证
+                }
+                
+                return customReason;
+            }
+            
+            return selectedValue;
+        }
+        
         // 显示积分建议提示
         function showPointsSuggestion(inputId, points, type) {
             const input = document.getElementById(inputId);
@@ -6115,8 +6183,16 @@
                 if (elements.addReason) {
                     elements.addReason.addEventListener('change', (e) => {
                         const reason = e.target.value;
-                        if (reason && reason !== '其他') {
+                        if (reason === '__CUSTOM_INPUT__') {
+                            // 显示自定义输入框
+                            toggleCustomInput(elements.addReason, elements.customAddReasonGroup, 'earn');
+                        } else if (reason && reason !== '其他') {
+                            // 隐藏自定义输入框并自动设置积分数量
+                            toggleCustomInput(elements.addReason, elements.customAddReasonGroup, 'earn');
                             autoSetPointsAmount(reason, 'earn');
+                        } else {
+                            // 选择"其他"时隐藏自定义输入框
+                            toggleCustomInput(elements.addReason, elements.customAddReasonGroup, 'earn');
                         }
                     });
                 }
@@ -6125,8 +6201,16 @@
                 if (elements.subtractReason) {
                     elements.subtractReason.addEventListener('change', (e) => {
                         const reason = e.target.value;
-                        if (reason && reason !== '其他') {
+                        if (reason === '__CUSTOM_INPUT__') {
+                            // 显示自定义输入框
+                            toggleCustomInput(elements.subtractReason, elements.customSubtractReasonGroup, 'spend');
+                        } else if (reason && reason !== '其他') {
+                            // 隐藏自定义输入框并自动设置积分数量
+                            toggleCustomInput(elements.subtractReason, elements.customSubtractReasonGroup, 'spend');
                             autoSetPointsAmount(reason, 'spend');
+                        } else {
+                            // 选择"其他"时隐藏自定义输入框
+                            toggleCustomInput(elements.subtractReason, elements.customSubtractReasonGroup, 'spend');
                         }
                     });
                 }
@@ -6141,6 +6225,25 @@
                 if (elements.subtractAmount) {
                     elements.subtractAmount.addEventListener('keypress', (e) => {
                         if (e.key === 'Enter') subtractPoints();
+                    });
+                }
+                
+                // 自定义输入框的Enter键快捷操作
+                if (elements.customAddReason) {
+                    elements.customAddReason.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            // 自动聚焦到积分数量输入框
+                            elements.addAmount.focus();
+                        }
+                    });
+                }
+                
+                if (elements.customSubtractReason) {
+                    elements.customSubtractReason.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            // 自动聚焦到积分数量输入框
+                            elements.subtractAmount.focus();
+                        }
                     });
                 }
 
