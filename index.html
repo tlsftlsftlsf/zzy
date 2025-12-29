@@ -3774,6 +3774,12 @@
             // 更新用户下拉菜单
             updateUserDropdown();
             
+            // 关闭用户切换下拉菜单
+            const userDropdown = elements.userDropdown;
+            if (userDropdown && userDropdown.classList.contains('show')) {
+                userDropdown.classList.remove('show');
+            }
+            
             saveMultiUserData();
             
             showToast(`已切换到 ${multiUserData.users[userId].name}`);
@@ -3865,7 +3871,13 @@
             // 清空输入框
             elements.newUserNameInput.value = '';
             
-            showToast(`用户 "${name}" 添加成功！`);
+            // 关闭用户管理面板
+            closeUserManagementPanel();
+            
+            // 切换到新添加的用户
+            switchUser(newUser.id);
+            
+            showToast(`用户 "${name}" 添加成功并已切换！`);
         }
         
         // 删除用户
