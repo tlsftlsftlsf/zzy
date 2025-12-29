@@ -1557,6 +1557,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+
         @keyframes bounce-in {
             0% { transform: scale(0.3); opacity: 0; }
             50% { transform: scale(1.05); }
@@ -2301,6 +2306,316 @@
 
             .toast.show {
                 transform: translateY(0);
+            }
+
+            /* 美化确认对话框样式 */
+            .confirmation-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease-out;
+                backdrop-filter: blur(5px);
+            }
+
+            .confirmation-content {
+                background: var(--theme-bg);
+                border-radius: var(--border-radius);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                max-width: 400px;
+                width: 90%;
+                max-height: 80vh;
+                overflow-y: auto;
+                transform: scale(0.8);
+                animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+                position: relative;
+            }
+
+            .confirmation-content::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: var(--primary-gradient);
+                border-radius: var(--border-radius) var(--border-radius) 0 0;
+            }
+
+            @keyframes modalSlideIn {
+                to {
+                    transform: scale(1);
+                }
+            }
+
+            .confirmation-header {
+                text-align: center;
+                padding: 30px 30px 20px;
+                position: relative;
+            }
+
+            .confirmation-icon {
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 20px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.5em;
+                animation: iconBounce 0.6s ease-out;
+                position: relative;
+            }
+
+            .confirmation-icon.earn {
+                background: var(--success-gradient);
+                box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+                animation: iconBounce 0.6s ease-out, iconGlow 2s ease-in-out infinite;
+            }
+
+            .confirmation-icon.spend {
+                background: var(--danger-gradient);
+                box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+                animation: iconBounce 0.6s ease-out, iconGlow 2s ease-in-out infinite;
+            }
+
+            @keyframes iconBounce {
+                0% {
+                    transform: scale(0) rotate(-180deg);
+                    opacity: 0;
+                }
+                50% {
+                    transform: scale(1.2) rotate(-90deg);
+                }
+                100% {
+                    transform: scale(1) rotate(0deg);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes iconGlow {
+                0%, 100% {
+                    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+                }
+                50% {
+                    box-shadow: 0 0 40px rgba(16, 185, 129, 0.8), 0 0 60px rgba(16, 185, 129, 0.4);
+                }
+            }
+
+            .confirmation-title {
+                font-size: 1.4em;
+                font-weight: bold;
+                color: var(--theme-text);
+                margin-bottom: 10px;
+                animation: fadeInUp 0.6s ease-out 0.2s both;
+            }
+
+            .confirmation-subtitle {
+                color: #6c757d;
+                font-size: 0.95em;
+                animation: fadeInUp 0.6s ease-out 0.3s both;
+            }
+
+            .confirmation-details {
+                padding: 0 30px 20px;
+                animation: fadeInUp 0.6s ease-out 0.4s both;
+            }
+
+            .detail-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 0;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            .detail-item:last-child {
+                border-bottom: none;
+            }
+
+            .detail-label {
+                font-weight: 600;
+                color: #6c757d;
+                font-size: 0.9em;
+            }
+
+            .detail-value {
+                font-weight: bold;
+                color: var(--theme-text);
+                text-align: right;
+                max-width: 60%;
+                word-wrap: break-word;
+            }
+
+            .amount-highlight {
+                font-size: 1.3em;
+                background: var(--primary-gradient);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .confirmation-actions {
+                padding: 20px 30px 30px;
+                display: flex;
+                gap: 15px;
+                animation: fadeInUp 0.6s ease-out 0.5s both;
+            }
+
+            .confirmation-btn {
+                flex: 1;
+                padding: 15px 20px;
+                border: none;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: var(--transition);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .confirmation-btn::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transition: all 0.6s ease;
+                transform: translate(-50%, -50%);
+            }
+
+            .confirmation-btn:active::before {
+                width: 300px;
+                height: 300px;
+            }
+
+            .confirmation-btn.cancel {
+                background: rgba(108, 117, 125, 0.1);
+                color: #6c757d;
+                border: 2px solid rgba(108, 117, 125, 0.2);
+            }
+
+            .confirmation-btn.cancel:hover {
+                background: rgba(108, 117, 125, 0.2);
+                border-color: rgba(108, 117, 125, 0.3);
+                transform: translateY(-2px);
+            }
+
+            .confirmation-btn.confirm {
+                background: var(--primary-gradient);
+                color: white;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            }
+
+            .confirmation-btn.confirm:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            }
+
+            .confirmation-btn.confirm.earn {
+                background: var(--success-gradient);
+                box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            }
+
+            .confirmation-btn.confirm.earn:hover {
+                box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            }
+
+            .confirmation-btn.confirm.spend {
+                background: var(--danger-gradient);
+                box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+            }
+
+            .confirmation-btn.confirm.spend:hover {
+                box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+            }
+
+            /* 余额预览 */
+            .balance-preview {
+                margin-top: 15px;
+                padding: 15px;
+                border-radius: 10px;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+                border: 1px solid rgba(102, 126, 234, 0.2);
+            }
+
+            .balance-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 0.9em;
+            }
+
+            .balance-item:not(:last-child) {
+                margin-bottom: 8px;
+            }
+
+            .balance-label {
+                color: #6c757d;
+            }
+
+            .balance-value {
+                font-weight: bold;
+                color: var(--theme-text);
+            }
+
+            .balance-arrow {
+                color: #6c757d;
+                font-size: 0.8em;
+                margin: 0 8px;
+            }
+
+            /* 移动端优化 */
+            @media (max-width: 480px) {
+                .confirmation-content {
+                    width: 95%;
+                    margin: 20px;
+                }
+
+                .confirmation-header {
+                    padding: 25px 20px 15px;
+                }
+
+                .confirmation-icon {
+                    width: 60px;
+                    height: 60px;
+                    font-size: 2em;
+                }
+
+                .confirmation-title {
+                    font-size: 1.2em;
+                }
+
+                .confirmation-details {
+                    padding: 0 20px 15px;
+                }
+
+                .confirmation-actions {
+                    padding: 15px 20px 25px;
+                    flex-direction: column;
+                }
+
+                .detail-item {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+                }
+
+                .detail-value {
+                    max-width: 100%;
+                    text-align: left;
+                }
             }
 
             /* 成就弹窗优化 - 移动端适配 */
@@ -5148,6 +5463,130 @@
             return btoa(password);
         }
         
+        // 美化的确认对话框
+        function showConfirmationModal(options) {
+            return new Promise((resolve) => {
+                const { type, title, amount, reason, currency, currentBalance, newBalance } = options;
+                
+                const modal = document.createElement('div');
+                modal.className = 'confirmation-modal';
+                
+                const icon = type === 'earn' ? '🎉' : '💸';
+                const typeClass = type === 'earn' ? 'earn' : 'spend';
+                const confirmBtnClass = type === 'earn' ? 'earn' : 'spend';
+                const arrow = type === 'earn' ? '→' : '→';
+                const balanceChange = type === 'earn' ? `+${amount}` : `-${amount}`;
+                
+                modal.innerHTML = `
+                    <div class="confirmation-content">
+                        <div class="confirmation-header">
+                            <div class="confirmation-icon ${typeClass}">
+                                ${icon}
+                            </div>
+                            <div class="confirmation-title">${title}</div>
+                            <div class="confirmation-subtitle">请确认以下信息</div>
+                        </div>
+                        
+                        <div class="confirmation-details">
+                            <div class="detail-item">
+                                <span class="detail-label">操作类型</span>
+                                <span class="detail-value amount-highlight">
+                                    ${type === 'earn' ? '获得积分' : '消费积分'}
+                                </span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label">积分数量</span>
+                                <span class="detail-value amount-highlight">
+                                    ${balanceChange} ${currency}
+                                </span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label">操作原因</span>
+                                <span class="detail-value">${reason}</span>
+                            </div>
+                            
+                            <div class="balance-preview">
+                                <div class="balance-item">
+                                    <span class="balance-label">当前余额</span>
+                                    <span class="balance-value">${currentBalance} ${currency}</span>
+                                </div>
+                                <div class="balance-item">
+                                    <span class="balance-label">变化</span>
+                                    <span class="balance-value">
+                                        ${balanceChange} ${currency}
+                                        <span class="balance-arrow">${arrow}</span>
+                                        <span style="color: ${type === 'earn' ? '#10b981' : '#ef4444'}">
+                                            ${newBalance} ${currency}
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="confirmation-actions">
+                            <button class="confirmation-btn cancel" onclick="cancelConfirmation()">
+                                取消
+                            </button>
+                            <button class="confirmation-btn confirm ${confirmBtnClass}" onclick="confirmConfirmation()">
+                                确认${type === 'earn' ? '获得' : '消费'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // 绑定全局函数
+                window.cancelConfirmation = () => {
+                    closeConfirmationModal();
+                    resolve(false);
+                };
+                
+                window.confirmConfirmation = () => {
+                    closeConfirmationModal();
+                    resolve(true);
+                };
+                
+                // 点击背景关闭
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        window.cancelConfirmation();
+                    }
+                });
+                
+                // ESC键关闭
+                const handleEsc = (e) => {
+                    if (e.key === 'Escape') {
+                        window.cancelConfirmation();
+                        document.removeEventListener('keydown', handleEsc);
+                    }
+                };
+                document.addEventListener('keydown', handleEsc);
+                
+                // 自动聚焦到确认按钮
+                setTimeout(() => {
+                    const confirmBtn = modal.querySelector('.confirmation-btn.confirm');
+                    if (confirmBtn) confirmBtn.focus();
+                }, 300);
+            });
+        }
+        
+        // 关闭确认对话框
+        function closeConfirmationModal() {
+            const modal = document.querySelector('.confirmation-modal');
+            if (modal) {
+                modal.style.animation = 'fadeOut 0.3s ease-out forwards';
+                setTimeout(() => {
+                    document.body.removeChild(modal);
+                    // 清理全局函数
+                    delete window.cancelConfirmation;
+                    delete window.confirmConfirmation;
+                }, 300);
+            }
+        }
+
         // 密码验证对话框
         function showPasswordVerificationDialog(amount, reason) {
             return new Promise((resolve) => {
@@ -5349,9 +5788,18 @@
                 return;
             }
 
-            // 二次确认
-            const confirmMessage = `确定要获得 ${amount} ${pointsData.settings.currency} 吗？\n\n原因：${reason}`;
-            if (!confirm(confirmMessage)) {
+            // 显示美化的确认对话框
+            const confirmed = await showConfirmationModal({
+                type: 'earn',
+                title: '🎉 获得积分',
+                amount: amount,
+                reason: reason,
+                currency: pointsData.settings.currency,
+                currentBalance: pointsData.currentPoints,
+                newBalance: pointsData.currentPoints + amount
+            });
+
+            if (!confirmed) {
                 showToast('已取消操作', 'info');
                 return;
             }
@@ -5417,6 +5865,22 @@
                     showToast('密码验证失败，已取消操作', 'error');
                     return;
                 }
+            }
+
+            // 显示美化的确认对话框
+            const confirmed = await showConfirmationModal({
+                type: 'spend',
+                title: '💸 消费积分',
+                amount: amount,
+                reason: reason,
+                currency: pointsData.settings.currency,
+                currentBalance: pointsData.currentPoints,
+                newBalance: pointsData.currentPoints - amount
+            });
+
+            if (!confirmed) {
+                showToast('已取消操作', 'info');
+                return;
             }
 
             // 显示处理中的提示
