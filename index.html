@@ -571,6 +571,153 @@
             box-shadow: 0 10px 25px rgba(252, 70, 107, 0.4);
         }
 
+        /* 用户选择器优化 */
+        .user-selector {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .user-btn {
+            background: var(--theme-bg);
+            color: var(--theme-text);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            font-size: 14px;
+        }
+
+        .user-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: var(--card-shadow-hover);
+            border-color: var(--theme-accent);
+        }
+
+        .user-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .user-dropdown {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            background: var(--theme-bg);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow-hover);
+            padding: 20px;
+            min-width: 250px;
+            max-width: 90vw;
+            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-dropdown.show {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-bottom: 8px;
+        }
+
+        .user-option:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .user-option.active {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--theme-text);
+        }
+
+        .user-option.active .user-name {
+            color: white;
+        }
+
+        .user-points {
+            font-size: 0.85em;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-add-user {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .btn-manage-users {
+            background: var(--info-gradient);
+            color: white;
+        }
+
+        .user-action-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
         /* 主题选择器优化 */
         .theme-selector {
             position: fixed;
@@ -1919,6 +2066,52 @@
                 border-radius: 14px;
             }
 
+            /* 用户选择器优化 */
+            .user-selector {
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 1000;
+            }
+
+            .user-btn {
+                padding: 14px 18px;
+                font-size: 14px;
+                border-radius: 20px;
+                min-height: 44px;
+                position: relative;
+                overflow: hidden;
+                transition: box-shadow 0.2s ease, background 0.2s ease;
+            }
+
+            .user-btn:hover {
+                transform: none;
+            }
+
+            .user-btn:active {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transition: box-shadow 0.1s ease;
+            }
+
+            .user-dropdown {
+                position: fixed;
+                top: 65px;
+                left: 15px;
+                width: 280px;
+                max-width: calc(100vw - 30px);
+                padding: 15px;
+            }
+
+            .user-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .user-action-btn {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
             /* 主题选择器优化 */
             .theme-selector {
                 position: fixed;
@@ -2234,6 +2427,14 @@
     </style>
 </head>
 <body>
+    <!-- 用户选择器 -->
+    <div class="user-selector">
+        <button class="user-btn" onclick="toggleUserDropdown()">👥 <span id="currentUserName">小朋友</span></button>
+        <div class="user-dropdown" id="userDropdown">
+            <!-- 用户列表将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
     <!-- 主题选择器 -->
     <div class="theme-selector">
         <button class="theme-btn" onclick="toggleThemeDropdown()">🎨 主题</button>
@@ -2947,6 +3148,56 @@
         </div>
     </div>
 
+    <!-- 用户管理面板 -->
+    <div class="admin-panel" id="userManagementPanel">
+        <div class="admin-content">
+            <div class="admin-header">
+                <h2>👥 用户管理</h2>
+                <button class="btn-clear" onclick="closeUserManagementPanel()">✕ 关闭</button>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: var(--theme-text);">➕ 添加新用户</h3>
+                <div class="input-group">
+                    <label for="newUserNameInput">小朋友姓名</label>
+                    <input type="text" id="newUserNameInput" placeholder="请输入小朋友的姓名" maxlength="20" style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px;">
+                </div>
+                <div class="input-group">
+                    <label for="newUserCurrencyInput">积分单位</label>
+                    <select id="newUserCurrencyInput" style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px;">
+                        <option value="⭐ 星星">⭐ 星星</option>
+                        <option value="😊 笑脸">😊 笑脸</option>
+                        <option value="❤️ 爱心">❤️ 爱心</option>
+                        <option value="🌸 花朵">🌸 花朵</option>
+                        <option value="🍬 糖果">🍬 糖果</option>
+                        <option value="🎈 气球">🎈 气球</option>
+                        <option value="🧸 小熊">🧸 小熊</option>
+                        <option value="🌈 彩虹">🌈 彩虹</option>
+                        <option value="✨ 魔法">✨ 魔法</option>
+                    </select>
+                </div>
+                <button class="btn btn-add" onclick="addNewUser()" style="width: 100%; margin-top: 15px; background: var(--success-gradient);">➕ 添加用户</button>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+                <h3 style="margin-bottom: 20px; color: var(--theme-text);">📋 用户列表</h3>
+                <div id="userList" style="max-height: 300px; overflow-y: auto;">
+                    <!-- 用户列表将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            
+            <div style="background: rgba(102, 126, 234, 0.1); padding: 20px; border-radius: 12px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                <h4 style="margin-bottom: 10px; color: var(--theme-text);">💡 使用说明</h4>
+                <ul style="margin: 0; padding-left: 20px; color: #6c757d; font-size: 0.9em; line-height: 1.6;">
+                    <li>点击左上角的用户按钮可以快速切换用户</li>
+                    <li>每个用户拥有独立的积分、历史记录和成就</li>
+                    <li>删除用户将永久删除该用户的所有数据</li>
+                    <li>系统会自动保存所有用户的数据</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <script>
         console.log('终极积分系统脚本开始加载...');
         
@@ -2959,6 +3210,39 @@
         };
         
         let autoSyncTimer = null;
+        
+        // 多用户数据结构
+        let multiUserData = {
+            users: {},
+            currentUserId: null,
+            userCount: 0
+        };
+        
+        // 当前用户数据（单用户数据结构保持兼容）
+        let pointsData = {
+            currentPoints: 0,
+            totalEarned: 0,
+            totalSpent: 0,
+            lastUpdated: null,
+            history: [],
+            settings: {
+                childName: '小朋友',
+                currency: '积分',
+                notifications: true,
+                theme: 'default',
+                password: '',
+                passwordEnabled: false
+            },
+            achievements: {
+                firstEarn: false,
+                points50: false,
+                points100: false,
+                points500: false,
+                firstSpend: false,
+                dailyActive: false,
+                consistency3: false
+            }
+        };
         
         // 积分配置对象 - 根据原因自动设置积分数量
         const pointsConfig = {
@@ -3159,31 +3443,7 @@
             }
         };
 
-        // 全局数据对象
-        let pointsData = {
-            currentPoints: 0,
-            totalEarned: 0,
-            totalSpent: 0,
-            lastUpdated: null,
-            history: [],
-            settings: {
-                childName: '小朋友',
-                currency: '积分',
-                notifications: true,
-                theme: 'default',
-                password: '',
-                passwordEnabled: false
-            },
-            achievements: {
-                firstEarn: false,
-                points50: false,
-                points100: false,
-                points500: false,
-                firstSpend: false,
-                dailyActive: false,
-                consistency3: false
-            }
-        };
+
 
         // 预设积分单位库
         const currencyUnits = {
@@ -3342,7 +3602,7 @@
                 'addAmount', 'addReason', 'subtractAmount', 'subtractReason',
                 'historyList',
                 'achievementsGrid', 'achievementCount', 'chartContainer',
-                'themeDropdown', 'adminPanel', 'cloudSyncPanel',
+                'themeDropdown', 'adminPanel', 'cloudSyncPanel', 'userManagementPanel',
                 'adminTotalPoints', 'adminTotalEarned', 'adminTotalSpent', 'adminActivityDays',
                 'currencyPreview', 'previewIcon', 'previewName', 'pointsChangeIndicator',
                 'dailyQuote', 'quoteContent', 'quoteText', 'quoteAuthor', 'quoteLoading', 'quoteError',
@@ -3351,7 +3611,9 @@
                 'filteredTotalCount', 'filteredEarnedTotal', 'filteredSpentTotal', 'filteredNetGain',
                 'earnedCategoryChart', 'spentCategoryChart', 'trendChart', 'monthlyChart',
                 // 新增的自定义输入元素
-                'customAddReasonGroup', 'customAddReason', 'customSubtractReasonGroup', 'customSubtractReason'
+                'customAddReasonGroup', 'customAddReason', 'customSubtractReasonGroup', 'customSubtractReason',
+                // 新增的用户相关元素
+                'userDropdown', 'currentUserName', 'newUserNameInput', 'newUserCurrencyInput', 'userList'
             ];
             
             elementIds.forEach(id => {
@@ -3363,6 +3625,369 @@
             
             console.log('DOM元素初始化完成');
         }
+        
+        // 多用户管理功能
+        
+        // 生成唯一用户ID
+        function generateUserId() {
+            return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // 获取头像emoji
+        function getUserAvatar(name) {
+            const avatars = ['😊', '😄', '😁', '🤗', '🥰', '😍', '😎', '🤓', '😇', '😌', '😋', '😉', '🙂', '😺', '🐱', '🦄', '🌟', '🎈', '🎨', '🎭'];
+            const hash = name.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+            return avatars[Math.abs(hash) % avatars.length];
+        }
+        
+        // 创建用户数据
+        function createUserData(name, currency) {
+            return {
+                id: generateUserId(),
+                name: name,
+                avatar: getUserAvatar(name),
+                data: {
+                    currentPoints: 0,
+                    totalEarned: 0,
+                    totalSpent: 0,
+                    lastUpdated: null,
+                    history: [],
+                    settings: {
+                        childName: name,
+                        currency: currency || '⭐ 星星',
+                        notifications: true,
+                        theme: 'default',
+                        password: '',
+                        passwordEnabled: false
+                    },
+                    achievements: {
+                        firstEarn: false,
+                        points50: false,
+                        points100: false,
+                        points500: false,
+                        firstSpend: false,
+                        dailyActive: false,
+                        consistency3: false
+                    }
+                },
+                createdAt: new Date().toISOString()
+            };
+        }
+        
+        // 加载多用户数据
+        function loadMultiUserData() {
+            try {
+                const savedData = localStorage.getItem('multiUserPointsSystem');
+                if (savedData) {
+                    const parsed = JSON.parse(savedData);
+                    multiUserData = { ...multiUserData, ...parsed };
+                    console.log('多用户数据加载成功');
+                    
+                    // 如果没有当前用户，选择第一个用户
+                    if (!multiUserData.currentUserId && Object.keys(multiUserData.users).length > 0) {
+                        multiUserData.currentUserId = Object.keys(multiUserData.users)[0];
+                    }
+                } else {
+                    // 初始化第一个用户（迁移现有数据）
+                    initializeFirstUser();
+                }
+            } catch (error) {
+                console.error('加载多用户数据失败:', error);
+                initializeFirstUser();
+            }
+        }
+        
+        // 初始化第一个用户（迁移现有数据）
+        function initializeFirstUser() {
+            console.log('初始化第一个用户...');
+            
+            // 尝试加载旧数据
+            try {
+                const oldData = localStorage.getItem('ultimatePointsSystemFixed');
+                if (oldData) {
+                    const oldPointsData = JSON.parse(oldData);
+                    const firstUser = createUserData(oldPointsData.settings?.childName || '小朋友', oldPointsData.settings?.currency || '⭐ 星星');
+                    firstUser.data = oldPointsData;
+                    firstUser.name = oldPointsData.settings?.childName || '小朋友';
+                    firstUser.avatar = getUserAvatar(firstUser.name);
+                    
+                    multiUserData.users[firstUser.id] = firstUser;
+                    multiUserData.currentUserId = firstUser.id;
+                    multiUserData.userCount = 1;
+                    
+                    console.log('成功迁移现有数据到新用户');
+                } else {
+                    // 创建默认用户
+                    const defaultUser = createUserData('小朋友', '⭐ 星星');
+                    multiUserData.users[defaultUser.id] = defaultUser;
+                    multiUserData.currentUserId = defaultUser.id;
+                    multiUserData.userCount = 1;
+                }
+            } catch (error) {
+                console.error('迁移数据失败:', error);
+                // 创建默认用户
+                const defaultUser = createUserData('小朋友', '⭐ 星星');
+                multiUserData.users[defaultUser.id] = defaultUser;
+                multiUserData.currentUserId = defaultUser.id;
+                multiUserData.userCount = 1;
+            }
+            
+            saveMultiUserData();
+        }
+        
+        // 保存多用户数据
+        function saveMultiUserData() {
+            try {
+                localStorage.setItem('multiUserPointsSystem', JSON.stringify(multiUserData));
+                console.log('多用户数据保存成功');
+            } catch (error) {
+                console.error('保存多用户数据失败:', error);
+                showToast('保存失败，请检查存储空间', 'error');
+            }
+        }
+        
+        // 切换用户
+        function switchUser(userId) {
+            console.log('切换用户到:', userId);
+            
+            if (!multiUserData.users[userId]) {
+                console.error('用户不存在:', userId);
+                return;
+            }
+            
+            // 保存当前用户数据
+            saveCurrentUserData();
+            
+            // 切换用户
+            multiUserData.currentUserId = userId;
+            loadCurrentUserData();
+            
+            // 更新显示
+            updateDisplay();
+            renderHistory();
+            renderAchievements();
+            renderChart();
+            
+            // 更新用户下拉菜单
+            updateUserDropdown();
+            
+            saveMultiUserData();
+            
+            showToast(`已切换到 ${multiUserData.users[userId].name}`);
+        }
+        
+        // 保存当前用户数据
+        function saveCurrentUserData() {
+            if (multiUserData.currentUserId && multiUserData.users[multiUserData.currentUserId]) {
+                multiUserData.users[multiUserData.currentUserId].data = { ...pointsData };
+                multiUserData.users[multiUserData.currentUserId].name = pointsData.settings.childName;
+                console.log('当前用户数据已保存');
+            }
+        }
+        
+        // 加载当前用户数据
+        function loadCurrentUserData() {
+            if (multiUserData.currentUserId && multiUserData.users[multiUserData.currentUserId]) {
+                const userData = multiUserData.users[multiUserData.currentUserId];
+                pointsData = { ...userData.data };
+                
+                // 确保设置对象存在
+                if (!pointsData.settings) {
+                    pointsData.settings = {
+                        childName: '小朋友',
+                        currency: '积分',
+                        notifications: true,
+                        theme: 'default',
+                        password: '',
+                        passwordEnabled: false
+                    };
+                }
+                
+                console.log('已加载用户数据:', userData.name);
+            }
+        }
+        
+        // 添加新用户
+        function addNewUser() {
+            const name = elements.newUserNameInput.value.trim();
+            const currency = elements.newUserCurrencyInput.value;
+            
+            if (!name) {
+                showToast('请输入用户姓名', 'error');
+                return;
+            }
+            
+            // 检查姓名是否已存在
+            const existingUser = Object.values(multiUserData.users).find(user => user.name === name);
+            if (existingUser) {
+                showToast('该姓名已存在，请使用其他姓名', 'error');
+                return;
+            }
+            
+            const newUser = createUserData(name, currency);
+            multiUserData.users[newUser.id] = newUser;
+            multiUserData.userCount = Object.keys(multiUserData.users).length;
+            
+            saveMultiUserData();
+            updateUserDropdown();
+            renderUserList();
+            
+            // 清空输入框
+            elements.newUserNameInput.value = '';
+            
+            showToast(`用户 "${name}" 添加成功！`);
+        }
+        
+        // 删除用户
+        function deleteUser(userId) {
+            const user = multiUserData.users[userId];
+            if (!user) return;
+            
+            if (Object.keys(multiUserData.users).length <= 1) {
+                showToast('不能删除最后一个用户', 'error');
+                return;
+            }
+            
+            if (confirm(`确定要删除用户 "${user.name}" 吗？\n\n这将永久删除该用户的所有积分、历史记录和成就数据！`)) {
+                delete multiUserData.users[userId];
+                multiUserData.userCount = Object.keys(multiUserData.users).length;
+                
+                // 如果删除的是当前用户，切换到第一个用户
+                if (multiUserData.currentUserId === userId) {
+                    multiUserData.currentUserId = Object.keys(multiUserData.users)[0];
+                    loadCurrentUserData();
+                    updateDisplay();
+                    renderHistory();
+                    renderAchievements();
+                    renderChart();
+                }
+                
+                saveMultiUserData();
+                updateUserDropdown();
+                renderUserList();
+                
+                showToast(`用户 "${user.name}" 已删除`);
+            }
+        }
+        
+        // 更新用户下拉菜单
+        function updateUserDropdown() {
+            const dropdown = elements.userDropdown;
+            if (!dropdown) return;
+            
+            let dropdownHTML = '';
+            
+            // 生成用户列表
+            Object.values(multiUserData.users).forEach(user => {
+                const isActive = user.id === multiUserData.currentUserId;
+                const userPoints = user.data.currentPoints || 0;
+                
+                dropdownHTML += `
+                    <div class="user-option ${isActive ? 'active' : ''}" onclick="switchUser('${user.id}')">
+                        <div class="user-info">
+                            <div class="user-avatar">${user.avatar}</div>
+                            <div>
+                                <div class="user-name">${user.name}</div>
+                                <div class="user-points">${userPoints} ${user.data.settings?.currency || '⭐ 星星'}</div>
+                            </div>
+                        </div>
+                        ${isActive ? '<span style="color: white; font-weight: bold;">✓</span>' : ''}
+                    </div>
+                `;
+            });
+            
+            // 添加操作按钮
+            dropdownHTML += `
+                <div class="user-actions">
+                    <button class="user-action-btn btn-add-user" onclick="openAddUserModal()">➕ 添加用户</button>
+                    <button class="user-action-btn btn-manage-users" onclick="openUserManagementPanel()">⚙️ 管理用户</button>
+                </div>
+            `;
+            
+            dropdown.innerHTML = dropdownHTML;
+            
+            // 更新当前用户显示
+            if (elements.currentUserName && multiUserData.users[multiUserData.currentUserId]) {
+                elements.currentUserName.textContent = multiUserData.users[multiUserData.currentUserId].name;
+            }
+        }
+        
+        // 渲染用户管理列表
+        function renderUserList() {
+            const userList = elements.userList;
+            if (!userList) return;
+            
+            let listHTML = '';
+            
+            Object.values(multiUserData.users).forEach(user => {
+                const isActive = user.id === multiUserData.currentUserId;
+                const userPoints = user.data.currentPoints || 0;
+                const userHistoryCount = user.data.history?.length || 0;
+                
+                listHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #dee2e6; border-radius: 12px; margin-bottom: 10px; background: rgba(255, 255, 255, 0.5);">
+                        <div style="display: flex; align-items: center;">
+                            <div class="user-avatar" style="margin-right: 15px;">${user.avatar}</div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--theme-text); margin-bottom: 5px;">${user.name} ${isActive ? '<span style="color: #28a745; font-size: 12px;">(当前用户)</span>' : ''}</div>
+                                <div style="font-size: 0.85em; color: #6c757d;">
+                                    积分: ${userPoints} ${user.data.settings?.currency || '⭐ 星星'} | 
+                                    记录: ${userHistoryCount}条 | 
+                                    创建: ${new Date(user.createdAt).toLocaleDateString('zh-CN')}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            ${!isActive ? `
+                                <button onclick="switchUser('${user.id}')" style="padding: 6px 12px; background: var(--info-gradient); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">切换</button>
+                                <button onclick="deleteUser('${user.id}')" style="padding: 6px 12px; background: var(--danger-gradient); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;">删除</button>
+                            ` : '<span style="color: #28a745; font-size: 12px; font-weight: 600;">当前用户</span>'}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            userList.innerHTML = listHTML;
+        }
+        
+        // 切换用户下拉菜单
+        function toggleUserDropdown() {
+            console.log('切换用户下拉菜单');
+            const dropdown = elements.userDropdown;
+            if (!dropdown) return;
+            
+            dropdown.classList.toggle('show');
+            
+            // 如果打开，更新用户列表
+            if (dropdown.classList.contains('show')) {
+                updateUserDropdown();
+            }
+        }
+        
+        // 打开用户管理面板
+        function openUserManagementPanel() {
+            console.log('打开用户管理面板');
+            elements.userManagementPanel.classList.add('show');
+            renderUserList();
+            
+            // 关闭用户下拉菜单
+            elements.userDropdown.classList.remove('show');
+        }
+        
+        function closeUserManagementPanel() {
+            console.log('关闭用户管理面板');
+            elements.userManagementPanel.classList.remove('show');
+        }
+        
+        // 打开添加用户模态框（在这个实现中，直接使用输入框）
+        function openAddUserModal() {
+            elements.userDropdown.classList.remove('show');
+            openUserManagementPanel();
+            elements.newUserNameInput.focus();
+        }
 
         // 初始化
         function init() {
@@ -3370,12 +3995,38 @@
             
             try {
                 initElements();
-                loadData();
                 
-
+                // 确保基础数据结构存在
+                if (!pointsData.settings) {
+                    pointsData.settings = {
+                        childName: '小朋友',
+                        currency: '积分',
+                        notifications: true,
+                        theme: 'default',
+                        password: '',
+                        passwordEnabled: false
+                    };
+                }
+                
+                // 初始化多用户系统
+                loadMultiUserData();
+                loadCurrentUserData();
+                
+                // 确保当前用户的设置存在
+                if (!pointsData.settings) {
+                    pointsData.settings = {
+                        childName: '小朋友',
+                        currency: '积分',
+                        notifications: true,
+                        theme: 'default',
+                        password: '',
+                        passwordEnabled: false
+                    };
+                }
                 
                 applyTheme();
                 updateThemeSelector(); // 初始化主题选择器状态
+                updateUserDropdown(); // 初始化用户下拉菜单
                 updateDisplay();
                 renderHistory(); // 添加历史记录渲染
                 initHistoryFilters(); // 初始化历史记录筛选器
@@ -3392,10 +4043,52 @@
                 initCloudSync();
                 
                 console.log('=== 终极积分系统初始化完成 ===');
-                showToast('🌟 终极积分系统加载完成！');
+                const currentUser = multiUserData.users[multiUserData.currentUserId];
+                showToast(`🌟 终极积分系统加载完成！当前用户：${currentUser.name}`);
             } catch (error) {
                 console.error('初始化失败:', error);
-                showToast('系统初始化失败，请刷新页面', 'error');
+                
+                // 尝试错误恢复
+                try {
+                    // 确保基本数据结构存在
+                    if (!pointsData || !pointsData.settings) {
+                        pointsData = {
+                            currentPoints: 0,
+                            totalEarned: 0,
+                            totalSpent: 0,
+                            lastUpdated: null,
+                            history: [],
+                            settings: {
+                                childName: '小朋友',
+                                currency: '积分',
+                                notifications: true,
+                                theme: 'default',
+                                password: '',
+                                passwordEnabled: false
+                            },
+                            achievements: {
+                                firstEarn: false,
+                                points50: false,
+                                points100: false,
+                                points500: false,
+                                firstSpend: false,
+                                dailyActive: false,
+                                consistency3: false
+                            }
+                        };
+                    }
+                    
+                    // 尝试应用默认主题
+                    document.body.setAttribute('data-theme', 'default');
+                    
+                    // 更新显示
+                    updateDisplay();
+                    
+                    showToast('系统部分功能初始化失败，但核心功能正常', 'error');
+                } catch (recoveryError) {
+                    console.error('错误恢复失败:', recoveryError);
+                    showToast('系统初始化失败，请刷新页面', 'error');
+                }
             }
         }
 
@@ -3410,6 +4103,13 @@
 
         function changeTheme(themeName) {
             console.log('切换主题为:', themeName);
+            
+            // 确保数据存在
+            if (!pointsData || !pointsData.settings) {
+                console.warn('pointsData 未初始化，跳过主题切换');
+                return;
+            }
+            
             document.body.setAttribute('data-theme', themeName);
             pointsData.settings.theme = themeName;
             
@@ -3519,6 +4219,12 @@
         }
 
         function applyTheme() {
+            // 确保 pointsData 和 settings 存在
+            if (!pointsData || !pointsData.settings) {
+                console.warn('pointsData 或 settings 未初始化，使用默认值');
+                return;
+            }
+            
             const theme = pointsData.settings.theme || 'default';
             document.body.setAttribute('data-theme', theme);
             
@@ -3537,23 +4243,28 @@
             }
         }
 
-        // 从localStorage加载数据
+        // 从localStorage加载数据（兼容单用户模式）
         function loadData() {
             try {
                 const savedData = localStorage.getItem('ultimatePointsSystemFixed');
                 if (savedData) {
                     const parsed = JSON.parse(savedData);
                     pointsData = { ...pointsData, ...parsed };
-                    console.log('数据加载成功');
+                    console.log('数据加载成功（单用户模式）');
                 }
             } catch (error) {
                 console.error('加载数据失败:', error);
             }
         }
 
-        // 保存数据到localStorage
+        // 保存数据到localStorage（兼容单用户模式）
         function saveData() {
             try {
+                // 保存到多用户系统
+                saveCurrentUserData();
+                saveMultiUserData();
+                
+                // 保持向后兼容，同时保存到旧格式
                 localStorage.setItem('ultimatePointsSystemFixed', JSON.stringify(pointsData));
             } catch (error) {
                 console.error('保存数据失败:', error);
@@ -4002,8 +4713,17 @@
                             // 更新数据
                             pointsData = cloudData;
                             
-                            // 更新界面
-                            applyTheme();
+                                            // 更新界面
+                            try {
+                                applyTheme();
+                            } catch (themeError) {
+                                console.error('应用主题失败:', themeError);
+                                // 确保至少有默认主题
+                                if (pointsData && pointsData.settings) {
+                                    pointsData.settings.theme = 'default';
+                                    document.body.setAttribute('data-theme', 'default');
+                                }
+                            }
                             updateDisplay();
                             renderAchievements();
                             renderHistory();
@@ -4609,7 +5329,8 @@
                 addHistoryRecord('earned', amount, reason);
 
                 updateDisplay('gain', amount);
-                saveData();
+                saveData(); // 这会自动保存到多用户系统
+                updateUserDropdown(); // 更新用户下拉菜单显示
                 checkAchievements();
                 
                 // 更新筛选器和统计数据
@@ -4671,7 +5392,8 @@
                 addHistoryRecord('spent', amount, reason);
 
                 updateDisplay('loss', amount);
-                saveData();
+                saveData(); // 这会自动保存到多用户系统
+                updateUserDropdown(); // 更新用户下拉菜单显示
                 checkAchievements();
                 
                 // 更新筛选器和统计数据
@@ -5744,8 +6466,15 @@
             pointsData.settings.childName = newName;
             pointsData.settings.currency = newCurrency;
             
+            // 更新当前用户信息
+            if (multiUserData.currentUserId && multiUserData.users[multiUserData.currentUserId]) {
+                multiUserData.users[multiUserData.currentUserId].name = newName;
+                multiUserData.users[multiUserData.currentUserId].avatar = getUserAvatar(newName);
+            }
+            
             updateDisplay(); // 这个函数现在会调用updateCurrencyTexts()
-            saveData();
+            updateUserDropdown(); // 更新用户下拉菜单
+            saveData(); // 这会自动保存到多用户系统
         }
 
         // 显示提示消息
@@ -6247,19 +6976,31 @@
                     });
                 }
 
-                // 点击外部关闭主题下拉菜单
+                // 点击外部关闭下拉菜单
                 document.addEventListener('click', (e) => {
                     const themeSelector = document.querySelector('.theme-selector');
-                    const dropdown = elements.themeDropdown;
+                    const userSelector = document.querySelector('.user-selector');
+                    const themeDropdown = elements.themeDropdown;
+                    const userDropdown = elements.userDropdown;
                     
-                    if (themeSelector && dropdown && !themeSelector.contains(e.target)) {
-                        dropdown.classList.remove('show');
+                    if (themeSelector && themeDropdown && !themeSelector.contains(e.target)) {
+                        themeDropdown.classList.remove('show');
+                    }
+                    
+                    if (userSelector && userDropdown && !userSelector.contains(e.target)) {
+                        userDropdown.classList.remove('show');
                     }
                 });
 
-                // 点击主题选择器时阻止事件冒泡
+                // 点击选择器时阻止事件冒泡
                 if (document.querySelector('.theme-selector')) {
                     document.querySelector('.theme-selector').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                }
+                
+                if (document.querySelector('.user-selector')) {
+                    document.querySelector('.user-selector').addEventListener('click', (e) => {
                         e.stopPropagation();
                     });
                 }
@@ -6290,8 +7031,14 @@
                     if (elements.themeDropdown && elements.themeDropdown.classList.contains('show')) {
                         elements.themeDropdown.classList.remove('show');
                     }
+                    if (elements.userDropdown && elements.userDropdown.classList.contains('show')) {
+                        elements.userDropdown.classList.remove('show');
+                    }
                     if (elements.adminPanel && elements.adminPanel.classList.contains('show')) {
                         closeAdminPanel();
+                    }
+                    if (elements.userManagementPanel && elements.userManagementPanel.classList.contains('show')) {
+                        closeUserManagementPanel();
                     }
                 }
             });
