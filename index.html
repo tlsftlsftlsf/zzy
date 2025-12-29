@@ -3806,6 +3806,33 @@
                     };
                 }
                 
+                // 确保必要的数据数组存在
+                if (!pointsData.history) {
+                    pointsData.history = [];
+                }
+                if (!pointsData.achievements) {
+                    pointsData.achievements = {
+                        firstEarn: false,
+                        points50: false,
+                        points100: false,
+                        points500: false,
+                        firstSpend: false,
+                        dailyActive: false,
+                        consistency3: false
+                    };
+                }
+                
+                // 确保数值字段存在
+                if (typeof pointsData.currentPoints !== 'number') {
+                    pointsData.currentPoints = 0;
+                }
+                if (typeof pointsData.totalEarned !== 'number') {
+                    pointsData.totalEarned = 0;
+                }
+                if (typeof pointsData.totalSpent !== 'number') {
+                    pointsData.totalSpent = 0;
+                }
+                
                 console.log('已加载用户数据:', userData.name);
             }
         }
