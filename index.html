@@ -28,7 +28,7 @@
         }
 
         /* 彩虹主题 - 梦幻彩虹渐变 */
-        [data-theme="rainbow"] {
+        #userThemeContainer[data-theme="rainbow"] {
             --primary-gradient: linear-gradient(135deg, #ff006e 0%, #ffbe0b 25%, #8338ec 50%, #3a86ff 75%, #06ffa5 100%);
             --success-gradient: linear-gradient(135deg, #06ffa5 0%, #00d4aa 100%);
             --danger-gradient: linear-gradient(135deg, #ff006e 0%, #ff595e 100%);
@@ -42,7 +42,7 @@
         }
 
         /* 森林主题 - 深度森林绿 */
-        [data-theme="forest"] {
+        #userThemeContainer[data-theme="forest"] {
             --primary-gradient: linear-gradient(135deg, #0d5016 0%, #22c55e 50%, #84cc16 100%);
             --success-gradient: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
             --danger-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
@@ -56,7 +56,7 @@
         }
 
         /* 日落主题 - 温暖夕阳渐变 */
-        [data-theme="sunset"] {
+        #userThemeContainer[data-theme="sunset"] {
             --primary-gradient: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffcd3c 100%);
             --success-gradient: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
             --danger-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
@@ -70,7 +70,7 @@
         }
 
         /* 海洋主题 - 深蓝海洋渐变 */
-        [data-theme="ocean"] {
+        #userThemeContainer[data-theme="ocean"] {
             --primary-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
             --success-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
             --danger-gradient: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
@@ -84,7 +84,7 @@
         }
 
         /* 圣诞主题 - 经典圣诞红绿 */
-        [data-theme="christmas"] {
+        #userThemeContainer[data-theme="christmas"] {
             --primary-gradient: linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #dc2626 100%);
             --success-gradient: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
             --danger-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
@@ -98,7 +98,7 @@
         }
 
         /* 新年主题 - 喜庆金色庆祝 */
-        [data-theme="newyear"] {
+        #userThemeContainer[data-theme="newyear"] {
             --primary-gradient: linear-gradient(135deg, #ca8a04 0%, #fbbf24 25%, #f59e0b 50%, #ef4444 75%, #dc2626 100%);
             --success-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
             --danger-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
@@ -2785,7 +2785,8 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" id="userThemeContainer">
+        <!-- 动态用户主题容器将在JavaScript中创建 -->
         <!-- 头部和积分显示区域 -->
         <div class="header-dashboard-container">
             <!-- 左侧积分显示模块 -->
@@ -3286,6 +3287,9 @@
             </div>
         </div>
     </div>
+
+    <!-- 用户主题隔离容器 - 每个用户有独立的样式作用域 -->
+    <div id="dynamicThemeContainers" style="display: none;"></div>
 
     <!-- 家长控制面板 -->
     <div class="admin-panel" id="adminPanel">
@@ -4086,6 +4090,11 @@
             renderAchievements();
             renderChart();
             
+            // 应用新用户的主题
+            const newUserTheme = pointsData.settings?.theme || 'default';
+            createUserThemeContainer(userId, newUserTheme);
+            updateThemeSelector();
+            
             // 更新用户下拉菜单
             updateUserDropdown();
             
@@ -4378,7 +4387,11 @@
                     };
                 }
                 
-                applyTheme();
+                // 为当前用户创建独立的主题容器
+                const currentUserId = multiUserData.currentUserId;
+                const currentTheme = pointsData.settings.theme || 'default';
+                createUserThemeContainer(currentUserId, currentTheme);
+                
                 updateThemeSelector(); // 初始化主题选择器状态
                 updateUserDropdown(); // 初始化用户下拉菜单
                 updateDisplay();
@@ -4433,7 +4446,10 @@
                     }
                     
                     // 尝试应用默认主题
-                    document.body.setAttribute('data-theme', 'default');
+                    const userThemeContainer = document.getElementById('userThemeContainer');
+                    if (userThemeContainer) {
+                        userThemeContainer.setAttribute('data-theme', 'default');
+                    }
                     
                     // 更新显示
                     updateDisplay();
@@ -4464,7 +4480,17 @@
                 return;
             }
             
-            document.body.setAttribute('data-theme', themeName);
+            // 获取当前用户ID
+            const currentUserId = multiUserData.currentUserId;
+            if (!currentUserId) {
+                console.error('没有当前用户');
+                return;
+            }
+            
+            // 为当前用户创建独立的主题容器
+            createUserThemeContainer(currentUserId, themeName);
+            
+            // 更新用户设置
             pointsData.settings.theme = themeName;
             
             // 获取新主题的积分单位
@@ -4484,15 +4510,58 @@
             // 更新积分单位选择器
             populateCurrencyOptions();
             
-            // 更新主题选择器状态
+            // 更新主题选择器状态（只更新当前用户的）
             updateThemeSelector();
             
             // 更新所有积分单位相关的文本
             updateCurrencyTexts();
             
+            // 保存数据
             saveData();
             
-            // 更新主题选项的激活状态
+            // 更新主题选项的激活状态（只对当前用户）
+            updateCurrentUserThemeSelector(themeName);
+            
+            // 关闭下拉菜单
+            elements.themeDropdown.classList.remove('show');
+            showToast(`主题已切换为${getThemeName(themeName)}！`);
+        }
+        
+        // 为用户创建独立的主题容器
+        function createUserThemeContainer(userId, themeName) {
+            const dynamicContainers = document.getElementById('dynamicThemeContainers');
+            if (!dynamicContainers) return;
+            
+            // 检查是否已存在该用户的容器
+            let userContainer = document.getElementById(`user-theme-${userId}`);
+            
+            if (!userContainer) {
+                // 创建新的用户主题容器
+                userContainer = document.createElement('div');
+                userContainer.id = `user-theme-${userId}`;
+                userContainer.className = 'user-theme-container';
+                userContainer.setAttribute('data-theme', themeName);
+                
+                // 将容器添加到动态容器区域
+                dynamicContainers.appendChild(userContainer);
+                
+                console.log(`为用户 ${userId} 创建了新的主题容器`);
+            } else {
+                // 更新现有容器的主题
+                userContainer.setAttribute('data-theme', themeName);
+                console.log(`更新用户 ${userId} 的主题为: ${themeName}`);
+            }
+            
+            // 同步更新主容器的主题（保持UI正常显示）
+            const mainContainer = document.getElementById('userThemeContainer');
+            if (mainContainer) {
+                mainContainer.setAttribute('data-theme', themeName);
+            }
+        }
+        
+        // 更新当前用户的主题选择器状态
+        function updateCurrentUserThemeSelector(themeName) {
+            // 清除所有激活状态
             document.querySelectorAll('.theme-option').forEach(option => {
                 option.classList.remove('active');
             });
@@ -4513,10 +4582,6 @@
             if (themeOptions[targetIndex]) {
                 themeOptions[targetIndex].classList.add('active');
             }
-            
-            // 关闭下拉菜单
-            elements.themeDropdown.classList.remove('show');
-            showToast(`主题已切换为${getThemeName(themeName)}！`);
         }
         
         // 更新主题选择器状态
@@ -4580,7 +4645,10 @@
             }
             
             const theme = pointsData.settings.theme || 'default';
-            document.body.setAttribute('data-theme', theme);
+            const userThemeContainer = document.getElementById('userThemeContainer');
+            if (userThemeContainer) {
+                userThemeContainer.setAttribute('data-theme', theme);
+            }
             
             // 确保积分单位与主题匹配
             const themeCurrencies = getThemeCurrencies(theme);
@@ -5075,7 +5143,10 @@
                                 // 确保至少有默认主题
                                 if (pointsData && pointsData.settings) {
                                     pointsData.settings.theme = 'default';
-                                    document.body.setAttribute('data-theme', 'default');
+                                    const userThemeContainer = document.getElementById('userThemeContainer');
+                                    if (userThemeContainer) {
+                                        userThemeContainer.setAttribute('data-theme', 'default');
+                                    }
                                 }
                             }
                             updateDisplay();
